@@ -9,21 +9,21 @@ def create_tables():
     SQLModel.metadata.create_all(engine)
 
 
-class Game(SQLModel, table=True):
+class Language(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid4().hex), primary_key=True)
     text: str
 
 
-def create_game(game: Game) -> Game:
+def create_language(lang: Language) -> Language:
     with Session(engine) as s:
-        s.add(game)
+        s.add(lang)
         s.commit()
-    return game
+    return lang
 
 
-def update_game(game_id: str, new_text: str) -> Game | None:
+def update_language(lang_id: str, new_text: str) -> Language | None:
     with Session(engine) as s:
-        query = select(Game).where(Game.id == game_id)
+        query = select(Language).where(Language.id == lang_id)
         result = s.exec(query).first()
         if result:
             result.text = new_text
@@ -32,16 +32,16 @@ def update_game(game_id: str, new_text: str) -> Game | None:
         return None
 
 
-def view_games() -> list[Game]:
+def view_languages() -> list[Language]:
     with Session(engine) as s:
-        query = select(Game)
+        query = select(Language)
         results = s.exec(query).all()
     return list(results)
 
 
-def delete_game(game_id: str) -> bool:
+def delete_language(lang_id: str) -> bool:
     with Session(engine) as s:
-        query = select(Game).where(Game.id == game_id)
+        query = select(Language).where(Language.id == lang_id)
         result = s.exec(query).first()
         if result:
             s.delete(result)

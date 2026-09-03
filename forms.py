@@ -2,17 +2,17 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, SubmitField
 
 
-class CreateGameForm(FlaskForm):
-    name = StringField("Unesite ime igrice")
-    create_game = SubmitField("Dodaj igricu")
+class AddLanguageForm(FlaskForm):
+    name = StringField("Unesite ime programskog jezika")
+    create_lang = SubmitField("Dodaj")
 
 
-class UpdateGameForm(FlaskForm):
-    selection = SelectField("Izaberite igricu za ažuriranje", choices=[])
+class ModifyLanguageForm(FlaskForm):
+    selection = SelectField("Izaberite jezik za ažuriranje", choices=[])
     new_name = StringField("Upišite izmjenu")
-    update_game = SubmitField("Ažuriraj igricu")
+    update_lang = SubmitField("Ažuriraj")
 
 
-class DeleteGameForm(FlaskForm):
-    selection = SelectField("Izaberite igricu za brisanje", choices=[])
-    delete_game = SubmitField("Obriši igricu")
+class DeleteLanguageForm(FlaskForm):
+    selection = SelectField("Izaberite jezik za brisanje", choices=[])
+    delete_lang = SubmitField("Obriši")

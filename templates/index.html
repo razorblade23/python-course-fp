@@ -3,63 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Igrice</title>
+    <title>Popis programskih jezika</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <h2 class="text-center">Popis programskih jezika</h2>
+
+    <div class="container mt-5">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-4">
+                <button class="btn btn-outline-primary m-2" type="button" data-bs-toggle="collapse" data-bs-target="#addLangCollapse" aria-expanded="false" aria-controls="addLangCollapse">
+                    Dodaj jezik
+                </button>
+                <div class="collapse" id="addLangCollapse">
+                    <div class="card card-body">
+                        <form method="POST">
+                            <div class="mb-3">
+                                {{ add_lang_form.csrf_token }}
+                    
+                                {{ add_lang_form.name.label(class="form-label") }}
+                                {{ add_lang_form.name(class="form-control") }}
+                    
+                            </div>
+                                {{ add_lang_form.create_lang(class="btn btn-primary") }}
+                        </form>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline-warning m-2" type="button" data-bs-toggle="collapse" data-bs-target="#updateLangCollapse" aria-expanded="false" aria-controls="updateLangCollapse">
+                    Uredi jezik
+                </button>
+                <div class="collapse" id="updateLangCollapse">
+                    <div class="card card-body">
+                        <form method="POST">
+                            <div class="mb-3">
+                                {{ update_lang_form.csrf_token }}
+                    
+                                {{ update_lang_form.selection.label(class="form-label") }}
+                                {{ update_lang_form.selection(class="form-control") }}
+                                {{ update_lang_form.new_name.label(class="form-label") }}
+                                {{ update_lang_form.new_name(class="form-control") }}
+                    
+                            </div>
+                                {{ update_lang_form.update_lang(class="btn btn-primary") }}
+                        </form>
+                    </div>
+                </div>
+
+                <button class="btn btn-outline-danger m-2" type="button" data-bs-toggle="collapse" data-bs-target="#deleteLangCollapse" aria-expanded="false" aria-controls="deleteLangCollapse">
+                    Obriši jezik
+                </button>
+                <div class="collapse" id="deleteLangCollapse">
+                    <div class="card card-body">
+                        <form method="POST">
+                            <div class="mb-3">
+                                {{ delete_lang_form.csrf_token }}
+                    
+                                {{ delete_lang_form.selection.label(class="form-label") }}
+                                {{ delete_lang_form.selection(class="form-control") }}
+                    
+                            </div>
+                                {{ delete_lang_form.delete_lang(class="btn btn-primary") }}
+                        </form>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-
-    
-    <form method="POST">
-        <div class="mb-3">
-            {{ create_game_form.csrf_token }}
-
-            {{ create_game_form.name.label(class="form-label") }}
-            {{ create_game_form.name(class="form-control") }}
-
+            <div class="col-8">
+                <div class="row">
+                    {% if langs %}
+                        {% for lang in langs %}
+                            <div class="col">
+                                <div class="card" style="width: 10rem;">
+                                    {% if lang.logo %}
+                                    <img src="{{ lang.logo }}" class="card-img-top" alt="{{ lang.text }}">
+                                    {% else %}
+                                    <img src="..." class="card-img-top" alt="No image found">
+                                    {% endif %}
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ lang.text }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="col-12">
+                        <h2>Trenutno nema podataka</h2>
+                        <h5>Kliknite ispod za dodavanje novog programskog jezika</h5>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-            {{ create_game_form.create_game(class="btn btn-primary") }}
-    </form>
-
-    <form method="POST">
-        <div class="mb-3">
-            {{ update_game_form.csrf_token }}
-
-            {{ update_game_form.selection.label(class="form-label") }}
-            {{ update_game_form.selection(class="form-control") }}
-            {{ update_game_form.new_name.label(class="form-label") }}
-            {{ update_game_form.new_name(class="form-control") }}
-
-        </div>
-            {{ update_game_form.update_game(class="btn btn-primary") }}
-    </form>
-
-    <form method="POST">
-        <div class="mb-3">
-            {{ delete_game_form.csrf_token }}
-
-            {{ delete_game_form.selection.label(class="form-label") }}
-            {{ delete_game_form.selection(class="form-control") }}
-
-        </div>
-            {{ delete_game_form.delete_game(class="btn btn-primary") }}
-    </form>
-
-    <br>
-
-    {% for game in games %}
-        <li>{{ game.text }}</li>
-    {% endfor %}
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>

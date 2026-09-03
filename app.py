@@ -1,65 +1,98 @@
 from flask import Flask, flash, redirect, render_template, request
 
-from database import Game, create_game, delete_game, update_game, view_games
-from forms import CreateGameForm, DeleteGameForm, UpdateGameForm
+from database import (
+    Language,
+    create_language,
+    create_tables,
+    delete_language,
+    update_language,
+    view_languages,
+)
+from forms import AddLanguageForm, DeleteLanguageForm, ModifyLanguageForm
 
 flask = Flask(__name__)
 flask.config["SECRET_KEY"] = "my_secret_key"
 
+programming_language_logos = {
+    "python": "https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg",
+    "javascript": "https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg",
+    "typescript": "https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg",
+    "rust": "https://raw.githubusercontent.com/devicons/devicon/master/icons/rust/rust-original.svg",
+    "go": "https://raw.githubusercontent.com/devicons/devicon/master/icons/go/go-original.svg",
+    "php": "https://raw.githubusercontent.com/devicons/devicon/master/icons/php/php-original.svg",
+    "c": "https://raw.githubusercontent.com/devicons/devicon/master/icons/c/c-original.svg",
+    "c++": "https://raw.githubusercontent.com/devicons/devicon/master/icons/cplusplus/cplusplus-original.svg",
+    "c#": "https://raw.githubusercontent.com/devicons/devicon/master/icons/csharp/csharp-original.svg",
+    "java": "https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg",
+    "kotlin": "https://raw.githubusercontent.com/devicons/devicon/master/icons/kotlin/kotlin-original.svg",
+    "swift": "https://raw.githubusercontent.com/devicons/devicon/master/icons/swift/swift-original.svg",
+    "ruby": "https://raw.githubusercontent.com/devicons/devicon/master/icons/ruby/ruby-original.svg",
+    "dart": "https://raw.githubusercontent.com/devicons/devicon/master/icons/dart/dart-original.svg",
+    "scala": "https://raw.githubusercontent.com/devicons/devicon/master/icons/scala/scala-original.svg",
+    "elixir": "https://raw.githubusercontent.com/devicons/devicon/master/icons/elixir/elixir-original.svg",
+    "haskell": "https://raw.githubusercontent.com/devicons/devicon/master/icons/haskell/haskell-original.svg",
+    "lua": "https://raw.githubusercontent.com/devicons/devicon/master/icons/lua/lua-original.svg",
+    "r": "https://raw.githubusercontent.com/devicons/devicon/master/icons/r/r-original.svg",
+    "zig": "https://raw.githubusercontent.com/devicons/devicon/master/icons/zig/zig-original.svg",
+}
 
-# Glavna stranica
-# Sadrži
-# - Forma za upis igrice
-# - Forma za update igrice
-# - Forma za brisanje igrice
-# - Pregled igrice
+
 @flask.route("/", methods=["GET", "POST"])
 def home():
-    games = view_games()
+    languages = view_languages()
 
-    create_game_form = CreateGameForm()
-    update_game_form = UpdateGameForm()
-    delete_game_form = DeleteGameForm()
+    add_lang_form = AddLanguageForm()
+    update_lang_form = ModifyLanguageForm()
+    delete_lang_form = DeleteLanguageForm()
 
     # Populate choices data with game data
-    game_choices = [(game.id, game.text) for game in games]
-    update_game_form.selection.choices = game_choices
-    delete_game_form.selection.choices = game_choices
+    lang_choices = [(lang.id, lang.text) for lang in languages]
+    update_lang_form.selection.choices = lang_choices
+    delete_lang_form.selection.choices = lang_choices
+    languages_with_logos = [
+        {
+            "id": choice[0],
+            "text": choice[1],
+            "logo": programming_language_logos.get(choice[1].lower()),
+        }
+        for choice in lang_choices
+    ]
 
     # Grab the form "submit button" name (which is a key in a dict in python)
     # Check which condition applies and execute functions
     form_data = request.form
-    if form_data.get("create_game") and create_game_form.validate_on_submit():
-        game_text = create_game_form.name.data
-        if game_text:
-            game = Game(text=game_text)
-            create_game(game)
-            flash("Igrica uspješno spremljena")
+    if form_data.get("create_lang") and add_lang_form.validate_on_submit():
+        lang_text = add_lang_form.name.data
+        if lang_text:
+            game = Language(text=lang_text.capitalize())
+            create_language(game)
+            flash("Jezik uspješno spremljen")
             return redirect("/")
 
-    if form_data.get("update_game") and update_game_form.validate_on_submit():
-        game_id = update_game_form.selection.data
-        new_text = update_game_form.new_name.data
+    if form_data.get("update_lang") and update_lang_form.validate_on_submit():
+        lang_id = update_lang_form.selection.data
+        new_text = update_lang_form.new_name.data
 
-        if game_id and new_text:
-            update_game(game_id, new_text)
-            flash("Igrica uspješno ažurirana")
+        if lang_id and new_text:
+            update_language(lang_id, new_text)
+            flash("Jezik uspješno ažuriran")
             return redirect("/")
 
-    if form_data.get("delete_game") and delete_game_form.validate_on_submit():
-        game_id = delete_game_form.selection.data
-        delete_game(game_id)
-        flash("Igrica uspješno obrisana")
+    if form_data.get("delete_lang") and delete_lang_form.validate_on_submit():
+        lang_id = delete_lang_form.selection.data
+        delete_language(lang_id)
+        flash("Jezik uspješno obrisan")
         return redirect("/")
 
     return render_template(
         "index.html",
-        create_game_form=create_game_form,
-        update_game_form=update_game_form,
-        delete_game_form=delete_game_form,
-        games=games,
+        add_lang_form=add_lang_form,
+        update_lang_form=update_lang_form,
+        delete_lang_form=delete_lang_form,
+        langs=languages_with_logos,
     )
 
 
 if __name__ == "__main__":
+    create_tables()
     flask.run(debug=True)
