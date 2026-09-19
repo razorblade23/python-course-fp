@@ -58,8 +58,6 @@ def home():
         for choice in lang_choices
     ]
 
-    # Grab the form "submit button" name (which is a key in a dict in python)
-    # Check which condition applies and execute functions
     form_data = request.form
     if form_data.get("create_lang") and add_lang_form.validate_on_submit():
         lang_text = add_lang_form.name.data
